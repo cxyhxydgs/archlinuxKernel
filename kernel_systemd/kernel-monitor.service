@@ -1,0 +1,36 @@
+[Unit]
+Description=Linux Kernel System Monitor Service
+Documentation=man:kernel-monitor(8)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/local/bin/kernel-monitor.sh start
+ExecStop=/bin/kill -TERM $MAINPID
+ExecReload=/bin/kill -HUP $MAINPID
+
+# 重启策略
+Restart=on-failure
+RestartSec=5s
+
+# 资源限制
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# 安全设置
+NoNewPrivileges=false
+PrivateTmp=true
+
+# 日志
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=kernel-monitor
+
+# 工作目录
+WorkingDirectory=/var/lib/kernel-monitor
+
+[Install]
+WantedBy=multi-user.target

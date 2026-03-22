@@ -1,0 +1,36 @@
+[Unit]
+Description=OpenClaw Dynamic Route Monitor Service
+Documentation=https://github.com/openclaw/openclaw
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/local/bin/openclaw-monitor.sh start
+ExecStop=/bin/kill -TERM $MAINPID
+ExecReload=/bin/kill -HUP $MAINPID
+
+# 重启策略
+Restart=on-failure
+RestartSec=5s
+
+# 资源限制
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# 安全设置
+NoNewPrivileges=false
+PrivateTmp=true
+
+# 日志
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=openclaw-monitor
+
+# 工作目录
+WorkingDirectory=/var/lib/openclaw
+
+[Install]
+WantedBy=multi-user.target
